@@ -11,14 +11,14 @@
 "   g:workspace            The environmental variable containing the current
 "                          workspace. The variable should include the dollar
 "                          sign in it's definition.
-"   g:DevelopmentUsername  The username of the development account.
+"   g:developmentUsername  The username of the development account.
 "   g:javaCompiler         The build tool used for java.
 "   g:charLimit            The amount of characters allowed per line
 "
 "   Example File Contents:
 "
 "   let g:workspace="$WORKSPACE"
-"   let g:DevelopmentUsername="matt"
+"   let g:developmentUsername="matt"
 "   let g:javaCompiler="gradle"
 "   let g:charLimit=80
 "
@@ -46,9 +46,13 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
 " To close all folds type 'zM'
 
 " Before vimrc {{{
-    execute "source ~/." . s:hostname . ".before.vimrc"
-    if !exists("g:DevelopmentUsername")
-        let g:DevelopmentUsername = $USER
+    let s:beforeFile="~/." . s:hostname . ".before.vimrc"
+    if filereadable(expand(s:beforeFile))
+        execute "source " . s:beforeFile
+    endif
+
+    if !exists("g:developmentUsername")
+        let g:developmentUsername = $USER
     endif
     if !exists("g:charLimit")
         let g:charLimit = 80
@@ -97,7 +101,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         " Ctrl-Up moves tab left
         nnoremap <silent> <C-Up> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
         " Ctrl-Down moves tab right
-        nnoremap <silent> <C-Down> :execute 'silent! tabmove ' . tabpagenr()<CR>
+        nnoremap <silent> <C-Down> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
     endif " }}}
 " }}}
 " Settings {{{
@@ -176,10 +180,6 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         " line.
         nmap <leader>p O<Esc>
     " }}}
-    " Opening search results in a new file rather than quickfix {{{
-        " :F lets you open up the :g// search results in a new file
-        command! -nargs=? Filter let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a
-    " }}}
     " Switch buffers {{{
         nnoremap <C-n> :bn<CR>
         nnoremap <C-p> :bp<CR>
@@ -196,14 +196,14 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
     " Aliases to save typing {{{
         cnoreabbrev te tabedit
         cnoreabbrev vs vsplit
-        exe "cnoreabbrev so so /home/" . g:DevelopmentUsername . " /.vimrc"
+        exe "cnoreabbrev so so /home/" . g:developmentUsername . "/.vimrc"
         if v:version >= 700 " {{{
             cnoreabbrev te tabedit
-            exe "cnoreabbrev mod tabedit /home/" . g:DevelopmentUsername . " /.vimrc"
+            exe "cnoreabbrev mod tabedit /home/" . g:developmentUsername . "/.vimrc"
         " }}}
         else " {{{
             cnoreabbrev te edit
-            exe "cnoreabbrev mod edit /home/" . g:DevelopmentUsername . " /.vimrc"
+            exe "cnoreabbrev mod edit /home/" . g:developmentUsername . " /.vimrc"
         endif " }}}
     " }}}
     " Aliases to User Functions {{{
@@ -226,8 +226,8 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             " Don't wrap the lines
             setlocal wrap!
             setlocal autoindent
-            execute 'noremap <buffer> <leader>k oecho "' . g:DevelopmentUsername . ':" <Esc>'
-            execute 'noremap <buffer> <leader>l oecho "' . g:DevelopmentUsername . ':" <Esc>i'
+            execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ':" <Esc>'
+            execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ':" <Esc>i'
         endfunction
     " }}}
     " C and C++ {{{
@@ -245,8 +245,8 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             endif
             setlocal cindent
             " traces
-            execute 'noremap <buffer> <leader>k ostd::cout << "' . g:DevelopmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>'
-            execute 'noremap <buffer> <leader>l ostd::cout << "' . g:DevelopmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>14hi'
+            execute 'noremap <buffer> <leader>k ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>'
+            execute 'noremap <buffer> <leader>l ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>14hi'
         endfunction
     " }}}
     " Python {{{
@@ -256,8 +256,8 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal autoindent
             " traces
             setlocal foldmethod=indent
-            execute 'noremap <buffer> <leader>k oprint "' . g:DevelopmentUsername . ':" <Esc>'
-            execute 'noremap <buffer> <leader>l oprint "' . g:DevelopmentUsername . ':" <Esc>hi'
+            execute 'noremap <buffer> <leader>k oprint "' . g:developmentUsername . ':" <Esc>'
+            execute 'noremap <buffer> <leader>l oprint "' . g:developmentUsername . ':" <Esc>hi'
         endfunction
     " }}}
     " Java {{{
@@ -281,8 +281,8 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
                 \ '%Z%p^,' .
                 \ '%-G%.%#'
             " traces
-            execute 'noremap <buffer> <leader>k oSystem.out.println("' . g:DevelopmentUsername . ':" + " ");<Esc>'
-            execute 'noremap <buffer> <leader>l oSystem.out.println("' . g:DevelopmentUsername . ':" + " ");<Esc>2hi'
+            execute 'noremap <buffer> <leader>k oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>'
+            execute 'noremap <buffer> <leader>l oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>2hi'
         endfunction
     " }}}
     " Xml {{{
@@ -301,8 +301,8 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal expandtab
             setlocal smarttab
             " traces
-            execute 'noremap <buffer> <leader>k oecho "' . g:DevelopmentUsername . ': " <Esc>'
-            execute 'noremap <buffer> <leader>l oecho "' . g:DevelopmentUsername . ': " <Esc>i'
+            execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ': " <Esc>'
+            execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ': " <Esc>i'
             " new comment above the line where the command takes place
             noremap <buffer> <leader>c :setlocal noautoindent<Enter>O#    <Esc>:setlocal autoindent<Enter>i
             setlocal foldmethod=syntax
