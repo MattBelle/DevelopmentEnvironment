@@ -25,8 +25,7 @@
 " The last vimrc loaded should be named:
 "   ~/.<HOSTNAME>.after.vimrc
 "
-"   This file should be predominantly used to undo settings or define
-"   functions useful in that environment.
+"   This file should be predominantly used to undo settings or define functions useful in that environment.
 "
 " }}}
 "
@@ -59,12 +58,8 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
     endif
 " }}}
 " Color Scheme {{{
-" ========================================================================
-" =                           Description
-" ========================================================================
-" This section is to set any settings that effect the color scheme of a generic
-" file. File type specific schemes should be in syntax files.
-" ========================================================================
+    " This section is to set any settings that effect the color scheme of a generic file. File type
+    " specifics schemes should be in syntax files.
     syntax on
     " Normal settings {{{
         highlight Normal term=none cterm=none ctermfg=White ctermbg=Black gui=none guifg=White guibg=Black
@@ -79,6 +74,16 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         highlight TabLineSel cterm=none ctermfg=Black ctermbg=White gui=none guifg=fg guibg=Green
         highlight TabLineFill cterm=none ctermfg=White ctermbg=Black gui=none guifg=fg guibg=Green
     " }}}
+    " Custom Categories {{{
+        highlight CharLimit ctermbg=Red guibg=Red
+        highlight TrailingWhitespace ctermbg=Red guibg=Red
+    " }}}
+        if version >= 702
+            " This should fix performance issues caused by a memory leak in vim. This should not
+            " negatively effect experience since matches are made every time BufWinEnter is called
+            " which is called every time a buffer is displayed.
+            autocmd BufWinLeave * call clearmatches()
+        endif
 " }}}
 " Shell Correction {{{
     " Making Ctrl+arrow keys handle like Ctrl+arrow keys in putty.
@@ -173,11 +178,9 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         nnoremap <Down> gj
     " }}}
     " Insert lines without going into insert mode {{{
-        " Insert a line below the current line and then go back to the current
-        " line.
+        " Insert a line below the current line and then go back to the current line.
         nmap <leader>o o<Esc>k
-        " Insert a line above the current line and then go back to the current
-        " line.
+        " Insert a line above the current line and then go back to the current line.
         nmap <leader>p O<Esc>
     " }}}
     " Switch buffers {{{
@@ -203,7 +206,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         " }}}
         else " {{{
             cnoreabbrev te edit
-            exe "cnoreabbrev mod edit /home/" . g:developmentUsername . " /.vimrc"
+            exe "cnoreabbrev mod edit /home/" . g:developmentUsername . "/.vimrc"
         endif " }}}
     " }}}
     " Aliases to User Functions {{{
@@ -211,37 +214,60 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
     " }}}
 " }}}
 " FileType specific functions {{{
-    " Vimrc {{{
-        autocmd FileType vim call VimrcSettings()
-        function! VimrcSettings()
-            execute 'match Error /\%' . string(g:charLimit+1) . 'v.\+/'
+    " Vimscript {{{
+        autocmd FileType vim call VimscriptSettings()
+        function! VimscriptSettings()
+            call matchadd('TrailingWhitespace', '\s\+$')
+            call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
+            execute 'setlocal textwidth=' . string(g:charLimit)
             setlocal autoindent
             setlocal expandtab
             setlocal smarttab
-            " Is the reason all the stupid triple curly braces exist in this
-            " file.
+            " Is the reason all the stupid triple curly braces exist in this file.
             setlocal foldmethod=marker
             " shows the fold levels on the right of the file
             setlocal foldcolumn=3
             " Don't wrap the lines
             setlocal wrap!
-            setlocal autoindent
             execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ':" <Esc>'
             execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ':" <Esc>i'
         endfunction
     " }}}
-    " C and C++ {{{
+    " C {{{
         autocmd FileType c call CSettings()
         function! CSettings()
-            execute 'match Error /\%' . string(g:charLimit+1) . 'v.\+/'
+            call matchadd('TrailingWhitespace', '\s\+$')
+            call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
+            execute 'setlocal textwidth=' . string(g:charLimit)
             setlocal foldlevel=99
             setlocal autoindent
             setlocal expandtab
             setlocal smarttab
             setlocal foldmethod=syntax
             if exists("g:workspace")
-                exe "cd " . g:workspace . " /src"
-                exe "setlocal tags=" . g:workspace . " /tags"
+                exe "cd " . g:workspace . "/src"
+                exe "setlocal tags=" . g:workspace . "/tags"
+            endif
+            setlocal cindent
+            " traces
+            execute 'noremap <buffer> <leader>k oprintf("' . g:developmentUsername . ':");<Esc>'
+            execute 'noremap <buffer> <leader>l oprintf("' . g:developmentUsername . ':");<Esc>2hi'
+        endfunction
+    " }}}
+    " C++ {{{
+        autocmd FileType cpp call CppSettings()
+        function! CppSettings()
+            call matchadd('TrailingWhitespace', '\s\+$')
+            call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
+            execute 'setlocal textwidth=' . string(g:charLimit)
+            setlocal foldlevel=99
+            setlocal autoindent
+            setlocal expandtab
+            setlocal smarttab
+            setlocal foldmethod=syntax
+            if exists("g:workspace")
+                exe "cd " . g:workspace . "/src"
+                exe "setlocal tags=" . g:workspace . "/tags"
             endif
             setlocal cindent
             " traces
@@ -249,21 +275,12 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             execute 'noremap <buffer> <leader>l ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>14hi'
         endfunction
     " }}}
-    " Python {{{
-        autocmd FileType python call PythonSettings()
-        function! PythonSettings()
-            setlocal expandtab
-            setlocal autoindent
-            " traces
-            setlocal foldmethod=indent
-            execute 'noremap <buffer> <leader>k oprint "' . g:developmentUsername . ':" <Esc>'
-            execute 'noremap <buffer> <leader>l oprint "' . g:developmentUsername . ':" <Esc>hi'
-        endfunction
-    " }}}
     " Java {{{
         autocmd FileType java call JavaSettings()
         function! JavaSettings()
-            execute 'match Error /\%' . string(g:charLimit+1) . 'v.\+/'
+            call matchadd('TrailingWhitespace', '\s\+$')
+            call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
+            execute 'setlocal textwidth=' . string(g:charLimit)
             setlocal foldlevel=99
             setlocal autoindent
             setlocal expandtab
@@ -285,26 +302,38 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             execute 'noremap <buffer> <leader>l oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>2hi'
         endfunction
     " }}}
-    " Xml {{{
-        autocmd BufNewFile,BufRead *.xml call XmlSettings()
-        function! XmlSettings()
-            setlocal foldlevel=99
+    " Python {{{
+        autocmd FileType python call PythonSettings()
+        function! PythonSettings()
+            call matchadd('TrailingWhitespace', '\s\+$')
             setlocal expandtab
             setlocal autoindent
-            setlocal foldmethod=syntax
+            " traces
+            setlocal foldmethod=indent
+            execute 'noremap <buffer> <leader>k oprint "' . g:developmentUsername . ':" <Esc>'
+            execute 'noremap <buffer> <leader>l oprint "' . g:developmentUsername . ':" <Esc>hi'
         endfunction
     " }}}
     " Bash {{{
         autocmd FileType sh call BashSettings()
         function! BashSettings()
+            call matchadd('TrailingWhitespace', '\s\+$')
+            execute 'setlocal textwidth=' . string(g:charLimit)
             setlocal autoindent
             setlocal expandtab
             setlocal smarttab
             " traces
             execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ': " <Esc>'
             execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ': " <Esc>i'
-            " new comment above the line where the command takes place
-            noremap <buffer> <leader>c :setlocal noautoindent<Enter>O#    <Esc>:setlocal autoindent<Enter>i
+            setlocal foldmethod=syntax
+        endfunction
+    " }}}
+    " Xml {{{
+        autocmd FileType xml call XmlSettings()
+        function! XmlSettings()
+            setlocal foldlevel=99
+            setlocal expandtab
+            setlocal autoindent
             setlocal foldmethod=syntax
         endfunction
     " }}}
