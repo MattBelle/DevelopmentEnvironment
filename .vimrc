@@ -235,7 +235,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal smarttab
             setlocal wrap! " Don't wrap the lines.
 
-            " Hotkey generic a trace statement for easy insertion.
+            " Hotkey a generic trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ':" <Esc>'
             execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ':" <Esc>i'
         endfunction
@@ -254,7 +254,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal foldmethod=syntax
             setlocal smarttab
 
-            " Hotkey generic a trace statement for easy insertion.
+            " Hotkey a generic trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oprintf("' . g:developmentUsername . ':");<Esc>'
             execute 'noremap <buffer> <leader>l oprintf("' . g:developmentUsername . ':");<Esc>2hi'
 
@@ -278,7 +278,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal foldmethod=syntax
             setlocal smarttab
 
-            " Hotkey generic a trace statement for easy insertion.
+            " Hotkey a generic trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>'
             execute 'noremap <buffer> <leader>l ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>14hi'
 
@@ -301,7 +301,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal foldmethod=syntax
             setlocal smarttab
 
-            " Hotkey generic a trace statement for easy insertion.
+            " Hotkey a generic trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>'
             execute 'noremap <buffer> <leader>l oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>2hi'
 
@@ -329,7 +329,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal autoindent
             setlocal foldmethod=indent
 
-            " Hotkey generic a trace statement for easy insertion.
+            " Hotkey a generic trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oprint "' . g:developmentUsername . ':" <Esc>'
             execute 'noremap <buffer> <leader>l oprint "' . g:developmentUsername . ':" <Esc>hi'
         endfunction
@@ -345,7 +345,7 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             setlocal smarttab
             setlocal foldmethod=syntax
 
-            " Hotkey generic a trace statement for easy insertion.
+            " Hotkey a generic trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ': " <Esc>'
             execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ': " <Esc>i'
         endfunction
