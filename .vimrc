@@ -25,13 +25,10 @@
 " The last vimrc loaded should be named:
 "   ~/.<HOSTNAME>.after.vimrc
 "
-"   This file should be predominantly used to undo settings or define functions useful in that environment.
+"   This file should be predominantly used to undo settings or define functions useful in that
+"   environment.
 "
 " }}}
-"
-" TODO: Separate all features based on the vim version.
-" TODO: Improve comments on the functions.
-" TODO: get rid of all abbreviated commands
 
 " Uncomment to debug this vimrc
 " set verbose=15
@@ -40,9 +37,9 @@
 " Get the hostname
 let s:hostname = substitute(system('hostname'), '\n', '', '')
 
-" To toggle open/close a fold type 'za'
-" To open all folds type 'zR'
-" To close all folds type 'zM'
+" To toggle open/close a fold type 'za'.
+" To open all folds type 'zR'.
+" To close all folds type 'zM'.
 
 " Before vimrc {{{
     let s:beforeFile="~/." . s:hostname . ".before.vimrc"
@@ -50,9 +47,11 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         execute "source " . s:beforeFile
     endif
 
+    " Set default values for all expected global variables.
     if !exists("g:developmentUsername")
         let g:developmentUsername = $USER
     endif
+
     if !exists("g:charLimit")
         let g:charLimit = 80
     endif
@@ -99,67 +98,72 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
 " }}}
 " Tab Management {{{
     if v:version >= 700 " {{{
-        " Ctrl-Left goes to previous tab
+        " Ctrl-Left switches to previous tab.
         nnoremap <C-Left> :tabprevious<CR>
-        " Ctrl-Right goes to next tab
+        " Ctrl-Right switches to next tab.
         nnoremap <C-Right> :tabnext<CR>
-        " Ctrl-Up moves tab left
+        " Ctrl-Up moves tab left.
         nnoremap <silent> <C-Up> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
-        " Ctrl-Down moves tab right
+        " Ctrl-Down moves tab right.
         nnoremap <silent> <C-Down> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
     endif " }}}
 " }}}
 " Settings {{{
-    " Set leader to ,
+    " Set leader to ','.
     let mapleader = ","
 
-    " Don't be compatible with vi
+    " Don't be compatible with vi.
     set nocompatible
 
-    " Fixes backspace on certain systems
+    " Fixes backspace on certain systems.
     set backspace=2
 
-    " Set to auto read when a file is changed from the outside
+    " Auto read when a file is changed from the outside.
     set autoread
 
-    " Visual autocomplete for command menu
+    " Enable visual autocomplete for command menu.
     set wildmenu
 
-    " Visual autocomplete for command menu
-    set enc=utf-8
+    " Enable utf-8 encoding.
+    set encoding=utf-8
 
-    " Open man files with ':Man [command name]'
+    " Open man files with ':Man [command name]'.
     source $VIMRUNTIME/ftplugin/man.vim
 
-    " Detect filetype
+    " Enable file type detection as well as the loading of file type specific indent files.
     filetype indent on
 
     " Search modifiers {{{
+        " Highlight all matches to the last search pattern.
         set hlsearch
+        " Jump to the first match of the search pattern being typed as it is typed.
         set incsearch
     " }}}
 
     " Visual Settings {{{
-        " Number the lines
+        " Display the line number.
         set number
 
-        " Always show current position in the bottom right
+        " Always show the current cursor position in the bottom right corner of the screen.
         set ruler
 
-        " Spell check
+        " Enable spell check.
         set spell
 
         if v:version >= 700 " {{{
-            " Highlight current line
+            " Highlight the current line that the cursor is on.
             set cursorline
         endif " }}}
 
-        " Don't resize windows on close
+        " Don't resize windows on close.
         set noequalalways
     " }}}
     " Indentation modifiers {{{
+        " Set a tab to being visually identical to 4 spaces.
         set tabstop=4
+        " Set the number of spaces to use when auto-indenting.
         set shiftwidth=4
+        " Set the number of spaces inserted into a file when hitting the tab key in insert mode.
         set softtabstop=4
     " }}}
 " }}}
@@ -168,7 +172,9 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         inoremap <Nul> <C-n>
     " }}}
     " Resizing windows {{{
+        " Increases the window size.
         nnoremap <C-o> <C-w>>
+        " Decreases the window size.
         nnoremap <C-p> <C-w><
     " }}}
     " Traversing wrapped lines as if they were separate lines {{{
@@ -184,7 +190,9 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         nmap <leader>p O<Esc>
     " }}}
     " Switch buffers {{{
+        " Switch to the next buffer.
         nnoremap <C-n> :bn<CR>
+        " Switch to the previous buffer.
         nnoremap <C-p> :bp<CR>
     " }}}
 " }}}
@@ -197,7 +205,6 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         cnoreabbrev q!! q!
     " }}}
     " Aliases to save typing {{{
-        cnoreabbrev te tabedit
         cnoreabbrev vs vsplit
         exe "cnoreabbrev so so /home/" . g:developmentUsername . "/.vimrc"
         if v:version >= 700 " {{{
@@ -220,15 +227,15 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             call matchadd('TrailingWhitespace', '\s\+$')
             call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
             execute 'setlocal textwidth=' . string(g:charLimit)
+
             setlocal autoindent
             setlocal expandtab
+            setlocal foldcolumn=3 " Shows the fold levels on the left of the buffer's window.
+            setlocal foldmethod=marker " Fold on triple curly-braces.
             setlocal smarttab
-            " Is the reason all the stupid triple curly braces exist in this file.
-            setlocal foldmethod=marker
-            " shows the fold levels on the right of the file
-            setlocal foldcolumn=3
-            " Don't wrap the lines
-            setlocal wrap!
+            setlocal wrap! " Don't wrap the lines.
+
+            " Hotkey generic a trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ':" <Esc>'
             execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ':" <Esc>i'
         endfunction
@@ -239,19 +246,22 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             call matchadd('TrailingWhitespace', '\s\+$')
             call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
             execute 'setlocal textwidth=' . string(g:charLimit)
-            setlocal foldlevel=99
+
             setlocal autoindent
+            setlocal cindent
             setlocal expandtab
-            setlocal smarttab
+            setlocal foldlevel=99
             setlocal foldmethod=syntax
+            setlocal smarttab
+
+            " Hotkey generic a trace statement for easy insertion.
+            execute 'noremap <buffer> <leader>k oprintf("' . g:developmentUsername . ':");<Esc>'
+            execute 'noremap <buffer> <leader>l oprintf("' . g:developmentUsername . ':");<Esc>2hi'
+
             if exists("g:workspace")
                 exe "cd " . g:workspace . "/src"
                 exe "setlocal tags=" . g:workspace . "/tags"
             endif
-            setlocal cindent
-            " traces
-            execute 'noremap <buffer> <leader>k oprintf("' . g:developmentUsername . ':");<Esc>'
-            execute 'noremap <buffer> <leader>l oprintf("' . g:developmentUsername . ':");<Esc>2hi'
         endfunction
     " }}}
     " C++ {{{
@@ -260,19 +270,22 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             call matchadd('TrailingWhitespace', '\s\+$')
             call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
             execute 'setlocal textwidth=' . string(g:charLimit)
-            setlocal foldlevel=99
+
             setlocal autoindent
+            setlocal cindent
             setlocal expandtab
-            setlocal smarttab
+            setlocal foldlevel=99
             setlocal foldmethod=syntax
+            setlocal smarttab
+
+            " Hotkey generic a trace statement for easy insertion.
+            execute 'noremap <buffer> <leader>k ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>'
+            execute 'noremap <buffer> <leader>l ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>14hi'
+
             if exists("g:workspace")
                 exe "cd " . g:workspace . "/src"
                 exe "setlocal tags=" . g:workspace . "/tags"
             endif
-            setlocal cindent
-            " traces
-            execute 'noremap <buffer> <leader>k ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>'
-            execute 'noremap <buffer> <leader>l ostd::cout << "' . g:developmentUsername . ':" <<__PRETTY_FUNCTION__ << " :" << std::endl;<Esc>14hi'
         endfunction
     " }}}
     " Java {{{
@@ -281,35 +294,42 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
             call matchadd('TrailingWhitespace', '\s\+$')
             call matchadd('CharLimit', '\%' . string(g:charLimit+1) . 'v.\+')
             execute 'setlocal textwidth=' . string(g:charLimit)
-            setlocal foldlevel=99
+
             setlocal autoindent
             setlocal expandtab
+            setlocal foldlevel=99
+            setlocal foldmethod=syntax
             setlocal smarttab
+
+            " Hotkey generic a trace statement for easy insertion.
+            execute 'noremap <buffer> <leader>k oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>'
+            execute 'noremap <buffer> <leader>l oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>2hi'
+
             if exists("g:workspace")
                 execute "cd " . g:workspace
             endif
-            setlocal foldmethod=syntax
+
             if exists("g:javaCompiler")
                 execute "compiler! " . g:javaCompiler
             endif
+
             let &errorformat =
                 \ '%E%\m:%\%%(compileJava%\|compileTarget%\)%f:%l: error: %m,' .
                 \ '%E%f:%l: error: %m,' .
                 \ '%Z%p^,' .
                 \ '%-G%.%#'
-            " traces
-            execute 'noremap <buffer> <leader>k oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>'
-            execute 'noremap <buffer> <leader>l oSystem.out.println("' . g:developmentUsername . ':" + " ");<Esc>2hi'
         endfunction
     " }}}
     " Python {{{
         autocmd FileType python call PythonSettings()
         function! PythonSettings()
             call matchadd('TrailingWhitespace', '\s\+$')
+
             setlocal expandtab
             setlocal autoindent
-            " traces
             setlocal foldmethod=indent
+
+            " Hotkey generic a trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oprint "' . g:developmentUsername . ':" <Esc>'
             execute 'noremap <buffer> <leader>l oprint "' . g:developmentUsername . ':" <Esc>hi'
         endfunction
@@ -319,21 +339,23 @@ let s:hostname = substitute(system('hostname'), '\n', '', '')
         function! BashSettings()
             call matchadd('TrailingWhitespace', '\s\+$')
             execute 'setlocal textwidth=' . string(g:charLimit)
+
             setlocal autoindent
             setlocal expandtab
             setlocal smarttab
-            " traces
+            setlocal foldmethod=syntax
+
+            " Hotkey generic a trace statement for easy insertion.
             execute 'noremap <buffer> <leader>k oecho "' . g:developmentUsername . ': " <Esc>'
             execute 'noremap <buffer> <leader>l oecho "' . g:developmentUsername . ': " <Esc>i'
-            setlocal foldmethod=syntax
         endfunction
     " }}}
     " Xml {{{
         autocmd FileType xml call XmlSettings()
         function! XmlSettings()
-            setlocal foldlevel=99
-            setlocal expandtab
             setlocal autoindent
+            setlocal expandtab
+            setlocal foldlevel=99
             setlocal foldmethod=syntax
         endfunction
     " }}}
